@@ -1,0 +1,13 @@
+init new var a b
+set var a b to 1
+print null-terminated string "1 1 "
+init new var c d
+set var d to 100
+while var d >0 do{
+set var c to (a)
+set var a to (a+b)
+print var a as number
+print character " "
+set var b to (c)
+set var d to (d-1)
+}

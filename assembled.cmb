@@ -1,0 +1,47 @@
+setreg 0 1
+setreg 1 1
+setreg 2 0
+:loop
+add r0 r1
+setreg 2 v
+setreg 1 r0
+setreg 0 r2
+call .printnum
+joz 0 .loop
+
+
+:printnum
+push r4
+setreg 4 0
+push r2
+
+:_printnum_loop
+mod r2 10
+add v 0x30
+push v
+getreg 4
+add v 1
+setreg 4 v
+div r2 10
+setreg 2 v
+joz r2 ._output_loop
+joz 0 ._printnum_loop
+
+:_output_loop
+pop
+print v
+getreg 4
+sub v 1
+setreg 4 v
+joz v ._end_print
+joz 0 ._output_loop
+
+:_end_print
+
+print 10
+
+pop
+setreg 2 v
+pop
+setreg 4 v
+ret
