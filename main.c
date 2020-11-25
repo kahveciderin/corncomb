@@ -13,6 +13,12 @@ typedef struct dual_linked_list {
     struct dual_linked_list *next;
     struct dual_linked_list *prev;
 } dq_t;
+void write_to_return(uint64_t value, uint32_t *virtualmem, uint64_t instr_pc, uint64_t **register_banks) {
+    uint16_t dest = (uint16_t)(virtualmem[instr_pc + 1] >> 16);
+    uint8_t reggroup = dest >> 8;
+    uint8_t regindex = dest;
+    register_banks[reggroup][regindex] = value;
+}
 int main(int argc, char *kwargs[]) {
     FILE *f = fopen("compiled.cmb", "r");
     
@@ -43,7 +49,7 @@ int main(int argc, char *kwargs[]) {
     uint64_t v_register=0;
     uint64_t pc=0;
     uint64_t args[8];
-    
+    uint64_t *register_banks[] = {&v_register, registers, &pc};
     bool cont = 1;
     dq_t *stack = (dq_t*)malloc(sizeof(dq_t));
     dq_t *tmp;
@@ -95,7 +101,7 @@ int main(int argc, char *kwargs[]) {
             break;
 
             case 1: //malloc
-                v_register = (uint64_t)malloc(args[0]);
+                write_to_return((uint64_t)malloc(args[0]), virtualmem, oldpc, register_banks);
             break;
 
             case 2: //ptrram
@@ -122,7 +128,7 @@ int main(int argc, char *kwargs[]) {
             break;
 
             case 6: //get
-                v_register = *(uint64_t*)args[0];
+                write_to_return(*(uint64_t*)args[0], virtualmem, oldpc, register_banks);
             break;
 
             case 7: //print
@@ -134,19 +140,19 @@ int main(int argc, char *kwargs[]) {
             break;
 
             case 9: //add
-                v_register = args[0] + args[1];
+                write_to_return(args[0] + args[1], virtualmem, oldpc, register_banks);
             break;
 
             case 10: //sub
-                v_register = args[0] - args[1];
+                write_to_return(args[0] - args[1], virtualmem, oldpc, register_banks);
             break;
 
             case 11: //mul
-                v_register = args[0] * args[1];
+                write_to_return(args[0] * args[1], virtualmem, oldpc, register_banks);
             break;
 
             case 12: //div
-                v_register = args[0] / args[1];
+                write_to_return(args[0] / args[1], virtualmem, oldpc, register_banks);
             break;
 
             case 13: //setreg
@@ -154,7 +160,7 @@ int main(int argc, char *kwargs[]) {
             break;
 
             case 14: //getreg
-                v_register = registers[args[0]];
+                write_to_return(registers[args[0]], virtualmem, oldpc, register_banks);
             break;
 
             case 15: //joz
@@ -188,14 +194,14 @@ int main(int argc, char *kwargs[]) {
                 stack->value = args[0];
             break;
             case 20: //pop
-                v_register = stack->value;
+                write_to_return(stack->value, virtualmem, oldpc, register_banks);
                 tmp = stack->prev;
                 free(stack);
                 stack = tmp;
                 tmp->next = NULL;
             break;
             case 21: //mod
-                v_register = args[0] % args[1];
+                write_to_return(args[0] % args[1], virtualmem, oldpc, register_banks);
             break;
         }
         #ifdef DEBUG
