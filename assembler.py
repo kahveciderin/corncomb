@@ -12,6 +12,9 @@ labels = []
 def retreguse(opcode, *args):
     reguse = []
     argvals = []
+
+    ret_to = 0
+    print(args)
     for arg in args:
         a = 0
 
@@ -27,6 +30,21 @@ def retreguse(opcode, *args):
         elif arg[0] == 'v':
             a = 0
             reguse.insert(0,2) # 2 for previous return
+        elif arg[0] == '>':
+
+
+           
+            if arg[1] == 'r':
+                ret_to = arg[2]
+                ret_to += 0x0100
+            elif arg[1] == 'p' and arg[2] == 'c':
+                ret_to = 0
+                ret_to += 0x0200
+            else:
+                print("Warning: I am pretty sure there isn't a register called \""+arg+"\", because there isn't a register group named \""+arg[0]+"\"")
+                ret_to = 0x0000
+            
+
         else:
             a = int(arg[1])
             reguse.insert(0,3) # 3 for register
@@ -37,6 +55,11 @@ def retreguse(opcode, *args):
 
 
     regused = ''.join(str(e) for e in reguse)
+
+    regused = int(regused)
+
+
+
     values = ' '.join("{0:0{1}x}".format(int(e),8) for e in argvals)
     
     return "{0:0{1}x}".format(opcode, 8)+" "+"{0:0{1}}".format(int(regused),8)+" "+values
