@@ -14,7 +14,6 @@ def retreguse(opcode, *args):
     argvals = []
 
     ret_to = 0
-    print(args)
     for arg in args:
         a = 0
         append = True
@@ -57,7 +56,6 @@ def retreguse(opcode, *args):
     regused = ''.join(str(e) for e in reguse)
 
     regused = int(regused, 16)
-    print(ret_to)
     regused += ret_to << 16
 
     values = ' '.join("{0:0{1}x}".format(int(e),8) for e in argvals)
