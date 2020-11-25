@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define DEBUG
+//#define DEBUG
 typedef struct linked_list {
     uint32_t value;
     struct linked_list *next;
@@ -22,15 +22,15 @@ int main(int argc, char *kwargs[]) {
 
 
 
-    q_t *head = malloc(sizeof(q_t));
+    q_t *head = (q_t*)malloc(sizeof(q_t));
     q_t *tail = head;
     int i;
     for (i=0;fscanf(f, "%x", &tail->value) > 0; i++) {
-        tail->next = malloc(sizeof(q_t));
+        tail->next = (q_t*)malloc(sizeof(q_t));
         tail = tail->next;
     };
     fclose(f);
-    uint32_t *virtualmem = malloc(sizeof(uint32_t) * i);
+    uint32_t *virtualmem = (uint32_t*)malloc(sizeof(uint32_t) * i);
     for (int j=0;j<i;j++) {
         virtualmem[j] = head->value;
         q_t *n = head->next;
@@ -43,10 +43,15 @@ int main(int argc, char *kwargs[]) {
     uint64_t v_register=0;
     uint64_t pc=0;
     uint64_t args[8];
-    int argcounts[] = {1,1,1,2,1,2,1,1,1,2,2,2,2,2,1,2,1,1,1,2};
+    
     bool cont = 1;
-    dq_t *stack = malloc(sizeof(dq_t));
+    dq_t *stack = (dq_t*)malloc(sizeof(dq_t));
     dq_t *tmp;
+
+
+
+
+    int argcounts[] = {1,1,1,2,1,2,1,1,1,2,2,2,2,2,1,2,1,1,1,1,1,2};
     while (cont) {
         uint32_t opcode = virtualmem[pc];
         uint64_t oldpc = pc;
@@ -174,10 +179,9 @@ int main(int argc, char *kwargs[]) {
 
             case 18: //halt
                 cont = 0;
-            break;
 
             case 19: //push
-                stack->next = malloc(sizeof(dq_t));
+                stack->next = (dq_t*)malloc(sizeof(dq_t));
                 tmp = stack;
                 stack = stack->next;
                 stack->prev = tmp;
