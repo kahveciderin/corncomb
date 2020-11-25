@@ -35,7 +35,7 @@ def retreguse(opcode, *args):
 
            
             if arg[1] == 'r':
-                ret_to = arg[2]
+                ret_to = int(arg[2:])
                 ret_to += 0x0100
             elif arg[1] == 'p' and arg[2] == 'c':
                 ret_to = 0
@@ -56,13 +56,13 @@ def retreguse(opcode, *args):
 
     regused = ''.join(str(e) for e in reguse)
 
-    regused = int(regused)
-
-
+    regused = int(regused, 16)
+    print(ret_to)
+    regused += ret_to << 16
 
     values = ' '.join("{0:0{1}x}".format(int(e),8) for e in argvals)
     
-    return "{0:0{1}x}".format(opcode, 8)+" "+"{0:0{1}}".format(int(regused),8)+" "+values
+    return "{0:0{1}x}".format(opcode, 8)+" "+"{}".format(hex(regused)[2:].zfill(8))+" "+values
 
 
 with open(sys.argv[1]) as f:
@@ -93,10 +93,14 @@ for splitted in data:
         a1 = "0"
     else:
         a1 = splitted[1]
-    i = instrs.index(splitted[0])
-    ac = argcounts[i]
-    if ac == 2:
-        args = (a1, splitted[2])
-    else:
-        args = (a1,)
+    # i = instrs.index(splitted[0])
+    # ac = argcounts[i]
+    # if ac == 2:
+    #     args = (a1, splitted[2])
+    # else:
+    #    args = (a1,)
+    args = [a1]
+    if len(splitted) > 2:
+        args += splitted[2:]
+    args = tuple(args)
     print(retreguse(i, *args))
