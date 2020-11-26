@@ -17,7 +17,7 @@ def retreguse(opcode, *args):
     
     for arg in args:
         a = 0
-
+        append = True
         if arg[0] == '.':
             a = [x for x in labels if x.name == arg[1:len(arg)]][0].address
             reguse.insert(0,4) # 4 for virtual address
@@ -31,7 +31,7 @@ def retreguse(opcode, *args):
             a = 0
             reguse.insert(0,2) # 2 for previous return
         elif arg[0] == '>':
-
+            append = False
 
             
             if arg[1] == 'r':
@@ -51,8 +51,8 @@ def retreguse(opcode, *args):
             reguse.insert(0,3) # 3 for register
             if arg[0] != 'r':
                 print("Warning: I am pretty sure there isn't a register called \""+arg+"\", because there isn't a register group named \""+arg[0]+"\"")
-        
-        argvals.append(a)
+        if append:
+            argvals.append(a)
 
 
     regused = ''.join(str(e) for e in reguse)
@@ -63,7 +63,7 @@ def retreguse(opcode, *args):
 
     values = ' '.join("{0:0{1}x}".format(int(e),8) for e in argvals)
     
-    return "{0:0{1}x}".format(opcode, 8)+" "+"{0:0{1}}".format(int(regused),8)+" "+values
+    return "{0:0{1}x}".format(opcode, 8)+" "+"{}".format(hex(regused)[2:].zfill(8))+" "+values
 
 
 with open(sys.argv[1]) as f:
@@ -85,7 +85,7 @@ for splitted in data:
         print("Error: haha no: {}".format(splitted))
         exit(1)
     addr += argcounts[instrs.index(splitted[0])] + 2
-
+compiled_program = ""
 for splitted in data:
     if len(splitted[0]) == 0: continue
     zerolen = 0
