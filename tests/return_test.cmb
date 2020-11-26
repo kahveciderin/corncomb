@@ -1,2 +1,3 @@
-add 1 30 >r0
+add 1 0x30 >r0
 print r0
+halt

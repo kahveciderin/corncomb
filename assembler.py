@@ -59,11 +59,12 @@ def retreguse(opcode, *args):
 
     regused = int(regused) + (ret_to * 10000)
 
+    #print(regused)
     
 
     values = ' '.join("{0:0{1}x}".format(int(e),8) for e in argvals)
     
-    return "{0:0{1}x}".format(opcode, 8)+" "+"{}".format(hex(regused)[2:].zfill(8))+" "+values
+    return "{0:0{1}x}".format(opcode, 8)+" "+"{}".format(str(regused).zfill(8))+" "+values
 
 
 with open(sys.argv[1]) as f:

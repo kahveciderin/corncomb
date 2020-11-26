@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-
+#include <unistd.h>
 //#define DEBUG
 typedef struct linked_list {
     uint32_t value;
@@ -20,7 +20,17 @@ void write_to_return(uint64_t value, uint32_t *virtualmem, uint64_t instr_pc, ui
     register_banks[reggroup][regindex] = value;
 }
 int main(int argc, char *kwargs[]) {
-    FILE *f = fopen("compiled.cmb", "r");
+
+    if(argc < 2){
+        printf("Usage: comb <filename>\n");
+        return 0;
+    }
+
+    if(access(kwargs[1], F_OK ) == -1){
+        printf("File \"%s\" does not exist.\n", kwargs[1]);
+        return 0;
+    }
+    FILE *f = fopen(kwargs[1], "r");
     
     #ifdef DEBUG
     char *hahano_dbg[] = {"dealloc", "malloc", "ptrram", "setptr", "getptr", "set", "get", "print", "scan", "add", "sub", "mul", "div", "setreg", "getreg", "joz", "call", "ret", "halt", "push", "pop", "mod"};
@@ -218,6 +228,6 @@ int main(int argc, char *kwargs[]) {
         #endif
     }
     
-
+    fflush(stdout);
     return 0;
 }
