@@ -19,6 +19,11 @@ void write_to_return(uint64_t value, uint32_t *virtualmem, uint64_t instr_pc, ui
     uint8_t regindex = dest;
     register_banks[reggroup][regindex] = value;
 }
+
+void exit_error(){
+
+}
+
 int main(int argc, char *kwargs[]) {
 
     if(argc < 2){
