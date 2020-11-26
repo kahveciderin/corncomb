@@ -14,7 +14,7 @@ def retreguse(opcode, *args):
     argvals = []
 
     ret_to = 0
-    print(args)
+    
     for arg in args:
         a = 0
 
@@ -33,16 +33,17 @@ def retreguse(opcode, *args):
         elif arg[0] == '>':
 
 
-           
+            
             if arg[1] == 'r':
-                ret_to = arg[2]
-                ret_to += 0x0100
+                ret_to = int(arg[2])
+                ret_to += 100
+                
             elif arg[1] == 'p' and arg[2] == 'c':
                 ret_to = 0
-                ret_to += 0x0200
+                ret_to += 200
             else:
                 print("Warning: I am pretty sure there isn't a register called \""+arg+"\", because there isn't a register group named \""+arg[0]+"\"")
-                ret_to = 0x0000
+                ret_to = 000
             
 
         else:
@@ -56,9 +57,9 @@ def retreguse(opcode, *args):
 
     regused = ''.join(str(e) for e in reguse)
 
-    regused = int(regused)
+    regused = int(regused) + (ret_to * 10000)
 
-
+    
 
     values = ' '.join("{0:0{1}x}".format(int(e),8) for e in argvals)
     
@@ -87,16 +88,22 @@ for splitted in data:
 
 for splitted in data:
     if len(splitted[0]) == 0: continue
+    zerolen = 0
     if splitted[0][0] == ":":
         continue
     if splitted[0] in ["ret", "halt", "scan", "pop"]:
-        a1 = "0"
-    else:
-        a1 = splitted[1]
+        zerolen = 1
     i = instrs.index(splitted[0])
     ac = argcounts[i]
-    if ac == 2:
-        args = (a1, splitted[2])
+    
+    #if ac > 1:
+    #    #args = (a1, splitted[2])
+    #    args = (a1,splitted[2 : len(splitted)])
+    #else:
+    
+    if zerolen == 0:
+        args = tuple(splitted[1 : len(splitted)])
     else:
-        args = (a1,)
+        args = tuple([str(0)])
+    #print(args)
     print(retreguse(i, *args))
